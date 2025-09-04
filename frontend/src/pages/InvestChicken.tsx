@@ -111,8 +111,8 @@ export default function InvestChickenDeep(): JSX.Element {
       setError(null);
       try {
         const res = await api.get("/public/products");
-        // Filter to CHICKEN in the API response shape
-        const data = (res.data || []).filter((b: any) => b.product_type === "CHICKEN");
+        const products = Array.isArray(res.data) ? res.data : res.data.products || [];
+        const data = products.filter((b: any) => b.product_type === "CHICKEN");
         if (!data || !data.length) {
           // fallback demo data so the page is full
           if (mounted) setBatches(FALLBACK_BATCHES);
@@ -161,7 +161,15 @@ export default function InvestChickenDeep(): JSX.Element {
     else if (sortBy === "available") out.sort((a, b) => (b.target_units - b.units_placed) - (a.target_units - a.units_placed));
     else if (sortBy === "cheapest") out.sort((a, b) => a.unit_price - b.unit_price);
     // recommended (default) — sort by combination of ROI & availability
-    else if (sortBy === "recommended") out.sort((a, b) => (b.expected_roi * (1 + ((b.target_units - b.units_placed) / b.target_units))) - (a.expected_roi * (1 + ((a.target_units - a.units_placed) / a.target_units))));
+    else if (sortBy === "recommended") {
+      out.sort((a, b) => {
+        const scoreB = b.expected_roi * (1 + ((b.target_units - b.units_placed) / b.target_units));
+        const scoreA = a.expected_roi * (1 + ((a.target_units - a.units_placed) / a.target_units));
+        return scoreB - scoreA;
+      });
+    }
+    // Always show demo data if nothing matches
+    if (out.length === 0) return FALLBACK_BATCHES;
     return out;
   }, [batches, search, statusFilter, sortBy]);
 

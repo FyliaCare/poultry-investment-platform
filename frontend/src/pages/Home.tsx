@@ -5,7 +5,53 @@ import { LineChart, Line, ResponsiveContainer, CartesianGrid, XAxis, YAxis, Tool
 
 export default function Home() {
   const [stats, setStats] = useState<{ batches_chicken?: number; batches_egg?: number }>({})
-  const [products, setProducts] = useState<any[]>([])
+  const DEMO_PRODUCTS = [
+    {
+      id: 101,
+      product_type: 'CHICKEN',
+      farm_name: 'Golden Acres',
+      location: 'Greater Accra, Ghana',
+      unit_price: 40,
+      target_units: 2000,
+      units_placed: 420,
+      expected_roi: 0.18,
+      status: 'OPEN',
+    },
+    {
+      id: 102,
+      product_type: 'CHICKEN',
+      farm_name: 'Sunrise Poultry',
+      location: 'Ashanti Region',
+      unit_price: 36,
+      target_units: 1500,
+      units_placed: 1100,
+      expected_roi: 0.14,
+      status: 'ACTIVE',
+    },
+    {
+      id: 201,
+      product_type: 'EGG',
+      farm_name: 'Sunrise Layers',
+      location: 'Eastern Region, Ghana',
+      unit_price: 120,
+      target_units: 5000,
+      units_placed: 1750,
+      expected_roi: 0.01,
+      status: 'OPEN',
+    },
+    {
+      id: 202,
+      product_type: 'EGG',
+      farm_name: 'GreenYard Layers',
+      location: 'Ashanti Region',
+      unit_price: 100,
+      target_units: 3000,
+      units_placed: 2900,
+      expected_roi: 0.009,
+      status: 'ACTIVE',
+    },
+  ];
+  const [products, setProducts] = useState<any[]>(DEMO_PRODUCTS)
   const [loadingStats, setLoadingStats] = useState(true)
   const [loadingProducts, setLoadingProducts] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -36,8 +82,10 @@ export default function Home() {
       .finally(() => { if (mounted) setLoadingStats(false) })
 
     api.get('/public/products')
-      .then(r => { if (mounted) setProducts(r.data || []) })
-      .catch(() => { /* ignore - fallback handled */ })
+      .then(r => {
+        if (mounted) setProducts((r.data && r.data.length) ? r.data : DEMO_PRODUCTS)
+      })
+      .catch(() => { if (mounted) setProducts(DEMO_PRODUCTS) })
       .finally(() => { if (mounted) setLoadingProducts(false) })
 
     return () => { mounted = false }
