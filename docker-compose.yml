@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  api:
+    build: ./backend
+    ports: ["8000:8000"]
+    environment:
+      - DATABASE_URL=sqlite:///./poultry.db
+      - JWT_SECRET=change_me_in_env
+      - CORS_ORIGINS=http://localhost:5173
+    volumes:
+      - ./backend/app:/app/app
+      - ./backend/poultry.db:/app/poultry.db
+  web:
+    build: ./frontend
+    ports: ["5173:80"]
+    environment:
+      - VITE_API_URL=http://localhost:8000
+    depends_on:
+      - api
