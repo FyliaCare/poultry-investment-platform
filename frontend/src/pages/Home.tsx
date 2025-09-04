@@ -129,6 +129,7 @@ export default function Home() {
               <div className="mt-6 flex flex-col sm:flex-row gap-3">
                 <Link to="/register" className="btn btn-primary">Get started</Link>
                 <Link to="/how-it-works" className="btn btn-outline">How it works</Link>
+                <Link to="/portfolio" className="btn btn-accent">Go to Dashboard</Link>
               </div>
 
               <div className="mt-8 grid grid-cols-3 gap-4 text-center">

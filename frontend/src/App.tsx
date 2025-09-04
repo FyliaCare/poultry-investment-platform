@@ -30,7 +30,7 @@ export default function App() {
           <Route path="/faq" element={<FAQ />} />
           <Route path="/invest/eggs" element={<InvestEggs />} />
           <Route path="/invest/chicken" element={<InvestChicken />} />
-          <Route path="/portfolio" element={<PrivateRoute><Portfolio /></PrivateRoute>} />
+          <Route path="/portfolio" element={<Portfolio />} />
           <Route path="/admin" element={<PrivateRoute><AdminDashboard /></PrivateRoute>} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
