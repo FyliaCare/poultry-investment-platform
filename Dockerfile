@@ -25,9 +25,9 @@ COPY alembic.ini ./alembic.ini
 RUN echo '#!/bin/bash\n\
 set -e\n\
 echo "==> Checking database connection..."\n\
-echo "DATABASE_URL: ${DATABASE_URL:0:30}..."\n\
+echo "DATABASE_URL configured: ${DATABASE_URL:+YES}"\n\
 echo "==> Running database migrations..."\n\
-alembic upgrade head || { echo "Migration failed!"; exit 1; }\n\
+python -m alembic upgrade head || { echo "Migration failed!"; exit 1; }\n\
 echo "==> Migrations complete!"\n\
 echo "==> Starting application..."\n\
 exec uvicorn app.main:app --host 0.0.0.0 --port 8000\n\
@@ -35,4 +35,4 @@ exec uvicorn app.main:app --host 0.0.0.0 --port 8000\n\
 
 EXPOSE 8000
 
-CMD ["/app/start.sh"]
+CMD ["/bin/bash", "/app/start.sh"]
