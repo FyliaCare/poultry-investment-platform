@@ -17,7 +17,7 @@ RUN pip install alembic psycopg2-binary
 
 # Copy application code
 COPY backend/app ./app
-COPY backend/alembic.ini ./
+COPY alembic.ini ./
 COPY migrations ./migrations
 
 # Create startup script
