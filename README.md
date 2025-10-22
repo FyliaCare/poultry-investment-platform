@@ -36,17 +36,29 @@ npm run dev
 
 ## Production Deployment
 
-### Option 1: Deploy to Render.com ⭐ (Recommended - Easiest)
+### Option 1: Neon + Render ⭐ (Recommended - Best Performance)
 
 ```bash
-# Just push to GitHub and click "Deploy" on Render!
+# Neon PostgreSQL (serverless) + Render Backend
+# See DEPLOY_NEON_RENDER.md for complete guide
+```
+
+🚀 **Quick Start**: [DEPLOY_NEON_RENDER.md](DEPLOY_NEON_RENDER.md) - Deploy in 10 minutes
+💰 **Cost**: Free tier available (or $7-27/month for production)
+⚡ **Best for**: Production apps, better performance, 3GB free storage
+
+### Option 2: All-in-One Render
+
+```bash
+# Everything on Render (Database + Backend + Frontend)
 # See DEPLOY_TO_RENDER.md for complete guide
 ```
 
-🚀 **Quick Start**: [DEPLOY_TO_RENDER.md](DEPLOY_TO_RENDER.md) - Deploy in 10 minutes
-💰 **Cost**: Free tier available (or $14-21/month for production)
+🚀 **Quick Start**: [DEPLOY_TO_RENDER.md](DEPLOY_TO_RENDER.md)
+💰 **Cost**: Free tier or $14-21/month
+📦 **Best for**: Simplicity, everything in one place
 
-### Option 2: Self-Hosted (VPS/Cloud)
+### Option 3: Self-Hosted (VPS/Cloud)
 
 For deployment with Docker on your own server:
 
