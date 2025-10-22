@@ -12,9 +12,6 @@ RUN apt-get update && apt-get install -y \
 COPY backend/requirements.txt ./requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install alembic for migrations
-RUN pip install alembic psycopg2-binary
-
 # Copy application code from backend directory
 COPY backend/app ./app
 
