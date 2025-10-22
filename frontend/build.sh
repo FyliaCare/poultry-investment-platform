@@ -1,13 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -e
 
-echo "Installing dependencies..."
-npm ci --include=dev || npm install
+echo "==> Installing dependencies..."
+npm install
 
-echo "Building TypeScript..."
-./node_modules/.bin/tsc
+echo "==> Compiling TypeScript..."
+npm exec tsc
 
-echo "Building with Vite..."
-./node_modules/.bin/vite build
+echo "==> Building with Vite..."
+npm exec vite build
 
-echo "Build complete!"
+echo "==> Build complete!"
