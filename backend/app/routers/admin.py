@@ -2,12 +2,14 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from typing import List
 import logging
+import os
 
 from ..database import get_db
 from ..models import User
 from ..models import Farm, Batch, ProductType, FAQ, Page, User
 from ..schemas import FarmIn, FarmOut, BatchIn, BatchOut
 from ..services.payouts import simulate_payout_for_batch, execute_payout_for_batch
+from ..core.config import settings
 
 logger = logging.getLogger("admin_router")
 router = APIRouter(prefix="/admin", tags=["admin"])
@@ -116,6 +118,11 @@ def execute(batch_id: int, db: Session = Depends(get_db)):
 
 @router.post("/seed")
 def seed(db: Session = Depends(get_db)):
+    # Disable in production for security
+    if settings.is_production:
+        logger.warning("Seed endpoint called in production - blocked")
+        raise HTTPException(status_code=403, detail="Seed endpoint disabled in production")
+    
     user = db.query(User).order_by(User.id.asc()).first()
     try:
         # Make first user admin if exists

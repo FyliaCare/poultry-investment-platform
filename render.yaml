@@ -1,0 +1,44 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: poultry-db
+    env: docker
+    plan: free
+    databases:
+      - name: poultry_db
+        user: poultry_user
+
+  # Backend API
+  - type: web
+    name: poultry-api
+    env: docker
+    dockerfilePath: ./backend/Dockerfile.prod
+    dockerContext: ./backend
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: poultry-db
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@example.com
+      - key: ENVIRONMENT
+        value: production
+      - key: CORS_ORIGINS
+        sync: false
+
+  # Frontend Static Site
+  - type: web
+    name: poultry-web
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: ./frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          type: web
+          name: poultry-api
+          property: host

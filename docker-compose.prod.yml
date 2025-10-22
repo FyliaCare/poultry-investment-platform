@@ -1,0 +1,78 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: poultry_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: poultry_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: poultry_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - poultry_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U poultry_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: poultry_api
+    restart: unless-stopped
+    environment:
+      - DATABASE_URL=postgresql://poultry_user:${DB_PASSWORD}@db:5432/poultry_db
+      - JWT_SECRET=${JWT_SECRET}
+      - CORS_ORIGINS=${CORS_ORIGINS}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ENVIRONMENT=production
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - poultry_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    expose:
+      - "8000"
+
+  web:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+      args:
+        - VITE_API_URL=${VITE_API_URL}
+    container_name: poultry_web
+    restart: unless-stopped
+    depends_on:
+      - api
+    networks:
+      - poultry_network
+    ports:
+      - "80:80"
+      - "443:443"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - ./nginx/ssl:/etc/nginx/ssl:ro
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+
+networks:
+  poultry_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

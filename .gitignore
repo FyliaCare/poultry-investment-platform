@@ -1,0 +1,63 @@
+# .gitignore additions for production files
+
+# Environment files
+.env
+.env.production
+.env.local
+*.env
+
+# SSL Certificates
+nginx/ssl/*.pem
+nginx/ssl/*.key
+nginx/ssl/*.crt
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backups
+*.sql
+*.sql.gz
+backup_*.sql
+
+# Docker volumes
+postgres_data/
+
+# Logs
+*.log
+logs/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+ENV/
+env/
+
+# Node
+node_modules/
+dist/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+
+# Misc
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/

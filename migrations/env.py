@@ -1,9 +1,12 @@
 from logging.config import fileConfig
-
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-
 from alembic import context
+import os
+import sys
+
+# Add the app directory to the path
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'backend'))
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,8 +19,13 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from backend.app.models import Base
+from app.models import Base
 target_metadata = Base.metadata
+
+# Override sqlalchemy.url with environment variable if available
+database_url = os.getenv('DATABASE_URL')
+if database_url:
+    config.set_main_option('sqlalchemy.url', database_url)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
