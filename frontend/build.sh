@@ -4,10 +4,7 @@ set -e
 echo "==> Installing dependencies..."
 npm install
 
-echo "==> Compiling TypeScript..."
-npm exec tsc
-
-echo "==> Building with Vite..."
-npm exec vite build
+echo "==> Building application..."
+npm run build
 
 echo "==> Build complete!"
