@@ -72,9 +72,28 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
 
 @router.post("/login", response_model=Token)
 def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    # DEMO MODE: Auto-create user if they don't exist (REMOVE IN PRODUCTION!)
     user = db.query(User).filter(User.email == form_data.username).first()
-    if not user or not verify_password(form_data.password, user.hashed_password):
+    
+    if not user:
+        # Auto-create demo user
+        print(f"[DEMO MODE] Auto-creating user: {form_data.username}")
+        user = User(
+            email=form_data.username,
+            hashed_password=get_password_hash(form_data.password),
+            full_name=form_data.username.split("@")[0],
+            is_admin=False,
+        )
+        db.add(user)
+        db.flush()
+        wallet = Wallet(user_id=user.id, balance=1000.0)  # Demo balance
+        db.add(wallet)
+        db.commit()
+        db.refresh(user)
+    elif not verify_password(form_data.password, user.hashed_password):
+        # For existing users, still check password
         raise HTTPException(status_code=400, detail="Incorrect email or password")
+    
     token = create_access_token({"sub": str(user.id)})
     return Token(access_token=token)
 
