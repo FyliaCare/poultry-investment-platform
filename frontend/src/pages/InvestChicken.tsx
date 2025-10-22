@@ -110,7 +110,7 @@ export default function InvestChickenDeep(): JSX.Element {
       setLoading(true);
       setError(null);
       try {
-        const res = await api.get("/public/products");
+        const res = await api.get("/api/v1/public/products");
         const products = Array.isArray(res.data) ? res.data : res.data.products || [];
         const data = products.filter((b: any) => b.product_type === "CHICKEN");
         if (!data || !data.length) {

@@ -20,8 +20,8 @@ export default function HowItWorks() {
       setError(null)
       try {
         const [p, ov] = await Promise.all([
-          api.get('/public/pages/how-it-works').catch(() => ({ data: null })),
-          api.get('/public/overview').catch(() => ({ data: null })),
+          api.get('/api/v1/public/pages/how-it-works').catch(() => ({ data: null })),
+          api.get('/api/v1/public/overview').catch(() => ({ data: null })),
         ])
         if (!mounted) return
         setPage(p?.data || null)

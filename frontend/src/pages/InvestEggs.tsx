@@ -105,7 +105,7 @@ export default function InvestEggs() {
       setError(null);
       let eggs: Batch[] = [];
       try {
-        const res = await api.get("/public/products");
+        const res = await api.get("/api/v1/public/products");
         const products = Array.isArray(res.data) ? res.data : res?.data?.products ?? [];
         eggs = (products as any[]).filter((b: any) => b?.product_type === "EGG");
       } catch (e) {

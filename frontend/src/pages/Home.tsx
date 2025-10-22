@@ -76,12 +76,12 @@ export default function Home() {
     let mounted = true
     setLoadingStats(true)
     setError(null)
-    api.get('/public/overview')
+    api.get('/api/v1/public/overview')
       .then(r => { if (mounted) setStats(r.data.stats || {}) })
       .catch(() => { if (mounted) setError('Could not load platform stats') })
       .finally(() => { if (mounted) setLoadingStats(false) })
 
-    api.get('/public/products')
+    api.get('/api/v1/public/products')
       .then(r => {
         if (mounted) setProducts((r.data && r.data.length) ? r.data : DEMO_PRODUCTS)
       })
