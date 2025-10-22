@@ -4,29 +4,24 @@ from typing import List
 import logging
 
 from ..database import get_db
-from ..models import User
 from ..models import User, Wallet, Investment, Batch
 from ..schemas import InvestmentIn, InvestmentOut, PayoutOut
+from ..auth import get_current_user
 
 logger = logging.getLogger("investors_router")
 router = APIRouter(prefix="/invest", tags=["investor"])
 
 @router.get("/wallet")
-def wallet(db: Session = Depends(get_db)):
-    # Bypass login: use first user in DB for development
-    user = db.query(User).order_by(User.id.asc()).first()
-    if not user:
-        return {"success": False, "balance": 0.0}
+def wallet(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user = current_user
     w = db.query(Wallet).filter(Wallet.user_id == user.id).first()
     balance = w.balance if w else 0.0
     logger.info(f"User {user.id} wallet balance: {balance}")
     return {"success": True, "balance": balance}
 
 @router.post("/deposit")
-def deposit(amount: float, db: Session = Depends(get_db)):
-    user = db.query(User).order_by(User.id.asc()).first()
-    if not user:
-        return {"success": False, "balance": 0.0}
+def deposit(amount: float, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user = current_user
     if amount <= 0:
         logger.warning(f"User {user.id} tried to deposit non-positive amount: {amount}")
         raise HTTPException(status_code=400, detail="Amount must be positive")
@@ -40,10 +35,8 @@ def deposit(amount: float, db: Session = Depends(get_db)):
     return {"success": True, "balance": w.balance}
 
 @router.post("/create", response_model=InvestmentOut)
-def create_investment(payload: InvestmentIn, db: Session = Depends(get_db)):
-    user = db.query(User).order_by(User.id.asc()).first()
-    if not user:
-        return {"success": False, "investment": None}
+def create_investment(payload: InvestmentIn, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user = current_user
     try:
         batch = db.get(Batch, payload.batch_id)
         if not batch or batch.status not in ["PLANNED", "ACTIVE"]:
@@ -67,19 +60,15 @@ def create_investment(payload: InvestmentIn, db: Session = Depends(get_db)):
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create investment")
 
 @router.get("/my", response_model=List[InvestmentOut])
-def my_investments(db: Session = Depends(get_db)):
-    user = db.query(User).order_by(User.id.asc()).first()
-    if not user:
-        return {"success": False, "investments": []}
+def my_investments(db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user = current_user
     investments = db.query(Investment).filter(Investment.user_id == user.id).order_by(Investment.created_at.desc()).all()
     logger.info(f"User {user.id} listed {len(investments)} investments")
     return {"success": True, "investments": investments}
 
 @router.get("/payouts/{investment_id}", response_model=List[PayoutOut])
-def my_payouts(investment_id: int, db: Session = Depends(get_db)):
-    user = db.query(User).order_by(User.id.asc()).first()
-    if not user:
-        return {"success": False, "payouts": []}
+def my_payouts(investment_id: int, db: Session = Depends(get_db), current_user: User = Depends(get_current_user)):
+    user = current_user
     inv = db.get(Investment, investment_id)
     if not inv or inv.user_id != user.id:
         logger.warning(f"User {user.id} tried to access payout for investment {investment_id} not owned")
